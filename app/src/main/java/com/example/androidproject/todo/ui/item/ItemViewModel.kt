@@ -1,6 +1,7 @@
 package com.example.androidproject.todo.ui.item
 
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,7 +16,6 @@ import com.example.androidproject.core.Result
 import com.example.androidproject.core.TAG
 import com.example.androidproject.todo.data.Item
 import com.example.androidproject.todo.data.ItemRepository
-import com.example.androidproject.todo.util.showSimpleNotificationWithTapAction
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -62,7 +62,8 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
         isAvailable: Boolean,
         producer: String,
         specifications: String,
-        additionDate: Date
+        additionDate: Date,
+        onNewItemSaved: () -> Unit
     ) {
         viewModelScope.launch {
             Log.d(TAG, "saveOrUpdateItem...");
@@ -81,6 +82,7 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
                 val savedItem: Item;
                 if (itemId == null) {
                     savedItem = itemRepository.save(item)
+                    onNewItemSaved()
                 } else {
                     savedItem = itemRepository.update(item)
                 }

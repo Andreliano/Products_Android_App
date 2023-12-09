@@ -122,14 +122,15 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
                             producer,
                             specifications,
                             additionDate
-                        )
-                        showSimpleNotificationWithTapAction(
-                            context,
-                            channelId,
-                            notificationId,
-                            "New product or updated product",
-                            "A new product was created or updated!"
-                        )
+                        ) {
+                            showSimpleNotificationWithTapAction(
+                                context,
+                                channelId,
+                                notificationId,
+                                "New product: $name",
+                                "A new product was added in My App!"
+                            )
+                        }
                     }) { Text("Save") }
                 }
             )
