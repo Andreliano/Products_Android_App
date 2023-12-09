@@ -32,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidproject.R
 import com.example.androidproject.core.Result
+import com.example.androidproject.todo.util.createNotificationChannel
+import com.example.androidproject.todo.util.showSimpleNotificationWithTapAction
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -40,6 +42,10 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreen(itemId: String?, onClose: () -> Unit) {
+
+    val channelId = "MyTestChannel"
+    val notificationId = 0
+
     val itemViewModel = viewModel<ItemViewModel>(factory = ItemViewModel.Factory(itemId))
     val itemUiState = itemViewModel.uiState
     var name by rememberSaveable { mutableStateOf(itemUiState.item.name) }
@@ -72,6 +78,7 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
     LaunchedEffect(itemUiState.submitResult) {
         Log.d("ItemScreen", "Submit = ${itemUiState.submitResult}")
         if (itemUiState.submitResult is Result.Success) {
+            createNotificationChannel(channelId, context)
             Log.d("ItemScreen", "Closing screen")
             onClose()
         }
@@ -115,6 +122,13 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
                             producer,
                             specifications,
                             additionDate
+                        )
+                        showSimpleNotificationWithTapAction(
+                            context,
+                            channelId,
+                            notificationId,
+                            "New product or updated product",
+                            "A new product was created or updated!"
                         )
                     }) { Text("Save") }
                 }
@@ -169,8 +183,8 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
             Row {
                 TextField(
                     value = category,
-                    onValueChange = {category = it},
-                    label = {Text("Category")}
+                    onValueChange = { category = it },
+                    label = { Text("Category") }
                 )
             }
             Row(
@@ -185,15 +199,15 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
             Row {
                 TextField(
                     value = producer,
-                    onValueChange = {producer = it},
-                    label = {Text("Producer")}
+                    onValueChange = { producer = it },
+                    label = { Text("Producer") }
                 )
             }
             Row {
                 TextField(
                     value = specifications,
-                    onValueChange = {specifications = it},
-                    label = {Text("Specifications")}
+                    onValueChange = { specifications = it },
+                    label = { Text("Specifications") }
                 )
             }
             Row(
