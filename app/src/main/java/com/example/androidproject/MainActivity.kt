@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.example.androidproject.core.TAG
+import com.example.androidproject.todo.ui.status.MyNetworkStatus
 import com.example.androidproject.ui.theme.MyAppTheme
 import kotlinx.coroutines.launch
 

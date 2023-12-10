@@ -1,6 +1,7 @@
 package com.example.androidproject.todo.ui.items
 
 import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -19,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidproject.R
+import com.example.androidproject.todo.ui.status.MyNetworkStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +33,12 @@ fun ItemsScreen(onItemClick: (id: String?) -> Unit, onAddItem: () -> Unit, onLog
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.items)) },
+                title = {
+                    Column {
+                        Text(text = stringResource(id = R.string.items))
+                        MyNetworkStatus()
+                    }
+                },
                 actions = {
                     Button(onClick = onLogout) { Text("Logout") }
                 }
