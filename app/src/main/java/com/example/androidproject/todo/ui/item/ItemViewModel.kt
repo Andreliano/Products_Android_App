@@ -63,6 +63,8 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
         producer: String,
         specifications: String,
         additionDate: Date,
+        latitude: Double,
+        longitude: Double,
         onNewItemSaved: () -> Unit
     ) {
         viewModelScope.launch {
@@ -77,7 +79,9 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
                     isAvailable = isAvailable,
                     producer = producer,
                     specifications = specifications,
-                    additionDate = additionDate
+                    additionDate = additionDate,
+                    latitude = latitude,
+                    longitude = longitude
                 )
                 val savedItem: Item;
                 if (itemId == null) {

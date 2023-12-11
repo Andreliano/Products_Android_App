@@ -15,5 +15,7 @@ data class Item(@PrimaryKey val _id: String = "",
     val isAvailable: Boolean = false,
     val producer: String = "",
     val specifications: String = "",
-    val additionDate: Date = Date(System.currentTimeMillis())
+    val additionDate: Date = Date(System.currentTimeMillis()),
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )

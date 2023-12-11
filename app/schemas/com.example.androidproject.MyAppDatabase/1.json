@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4ee285ced938650480e456568eeaa295",
+    "identityHash": "671fd1eb4927215d01fdeee690acd2e9",
     "entities": [
       {
         "tableName": "items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` TEXT NOT NULL, `name` TEXT NOT NULL, `price` REAL NOT NULL, `amount` INTEGER NOT NULL, `category` TEXT NOT NULL, `isAvailable` INTEGER NOT NULL, `producer` TEXT NOT NULL, `specifications` TEXT NOT NULL, `additionDate` INTEGER NOT NULL, PRIMARY KEY(`_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` TEXT NOT NULL, `name` TEXT NOT NULL, `price` REAL NOT NULL, `amount` INTEGER NOT NULL, `category` TEXT NOT NULL, `isAvailable` INTEGER NOT NULL, `producer` TEXT NOT NULL, `specifications` TEXT NOT NULL, `additionDate` INTEGER NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, PRIMARY KEY(`_id`))",
         "fields": [
           {
             "fieldPath": "_id",
@@ -61,6 +61,18 @@
             "columnName": "additionDate",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -76,7 +88,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4ee285ced938650480e456568eeaa295')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '671fd1eb4927215d01fdeee690acd2e9')"
     ]
   }
 }

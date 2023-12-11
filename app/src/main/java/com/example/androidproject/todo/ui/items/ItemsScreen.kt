@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidproject.R
 import com.example.androidproject.todo.ui.jobs.MyJobs
+import com.example.androidproject.todo.ui.location.MyLocation
 import com.example.androidproject.todo.ui.status.MyNetworkStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
