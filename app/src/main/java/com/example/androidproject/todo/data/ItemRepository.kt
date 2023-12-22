@@ -111,6 +111,19 @@ class ItemRepository(
         itemDao.deleteAll()
     }
 
+    suspend fun getNrUnsaved(): Int {
+        return itemDao.getNotSaved(false)
+    }
+
+    suspend fun addLocally(item: Item) {
+        Log.d("Item locally: ", item.isSaved.toString());
+        itemDao.insert(item);
+    }
+
+    suspend fun getLocallySaved(): List<Item> {
+        return itemDao.getLocalItems(isSaved = false)
+    }
+
     fun setToken(token: String) {
         itemWsClient.authorize(token)
     }

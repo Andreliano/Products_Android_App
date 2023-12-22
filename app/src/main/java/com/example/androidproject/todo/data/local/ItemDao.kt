@@ -19,6 +19,12 @@ interface ItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<Item>)
 
+    @Query("SELECT * FROM items where isSaved = :isSaved")
+    suspend fun getLocalItems(isSaved: Boolean): List<Item>
+
+    @Query("SELECT COUNT(*) FROM Items where isSaved = :isSaved")
+    suspend fun getNotSaved(isSaved: Boolean): Int
+
     @Update
     suspend fun update(item: Item): Int
 

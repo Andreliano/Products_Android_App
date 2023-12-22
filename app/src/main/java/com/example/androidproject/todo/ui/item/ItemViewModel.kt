@@ -1,11 +1,9 @@
 package com.example.androidproject.todo.ui.item
 
 import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,6 +16,7 @@ import com.example.androidproject.todo.data.Item
 import com.example.androidproject.todo.data.ItemRepository
 import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.UUID;
 
 data class ItemUiState(
     val itemId: String? = null,
@@ -77,6 +76,7 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
                     amount = amount,
                     category = category,
                     isAvailable = isAvailable,
+                    isSaved = true,
                     producer = producer,
                     specifications = specifications,
                     additionDate = additionDate,
@@ -95,6 +95,23 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
             } catch (e: Exception) {
                 Log.d(TAG, "saveOrUpdateItem failed");
                 uiState = uiState.copy(submitResult = Result.Error(e))
+                val item = uiState.item.copy(
+                    _id = UUID.randomUUID().toString(),
+                    name = name,
+                    price = price,
+                    amount = amount,
+                    category = category,
+                    isAvailable = isAvailable,
+                    isSaved = false,
+                    producer = producer,
+                    specifications = specifications,
+                    additionDate = additionDate,
+                    latitude = latitude,
+                    longitude = longitude
+                )
+                itemRepository.addLocally(item);
+                Log.d(TAG, "added item ${item} locally");
+                uiState = uiState.copy(submitResult = Result.Success(item))
             }
         }
     }
