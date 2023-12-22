@@ -1,5 +1,6 @@
 package com.example.androidproject.todo.ui.item
 
+import android.Manifest
 import android.util.Log
 import android.app.DatePickerDialog
 import android.widget.DatePicker
@@ -32,14 +33,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidproject.R
 import com.example.androidproject.core.Result
+import com.example.androidproject.todo.ui.location.MyLocation
+import com.example.androidproject.todo.util.Permissions
+import com.example.androidproject.todo.util.createNotificationChannel
+import com.example.androidproject.todo.util.showSimpleNotificationWithTapAction
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ItemScreen(itemId: String?, onClose: () -> Unit) {
+
+    val channelId = "MyTestChannel"
+    val notificationId = 0
+
     val itemViewModel = viewModel<ItemViewModel>(factory = ItemViewModel.Factory(itemId))
     val itemUiState = itemViewModel.uiState
     var name by rememberSaveable { mutableStateOf(itemUiState.item.name) }
@@ -60,18 +70,23 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
 
     var showDatePicker by remember { mutableStateOf(false) }
 
+    var latitude by rememberSaveable { mutableStateOf<Double>(0.0) }
+
+    var longitude by rememberSaveable { mutableStateOf<Double>(0.0) }
+
     val calendar = Calendar.getInstance()
 
     val context = LocalContext.current
 
     Log.d(
         "ItemScreen",
-        "recompose, {name = $name, price = $price, amount = $amount, category = $category, isAvailable = $isAvailable, producer = $producer, specifications = $specifications, additionDate = $additionDate}"
+        "recompose, {name = $name, price = $price, amount = $amount, category = $category, isAvailable = $isAvailable, producer = $producer, specifications = $specifications, additionDate = $additionDate, latitude = $latitude, longitude = $longitude}"
     )
 
     LaunchedEffect(itemUiState.submitResult) {
         Log.d("ItemScreen", "Submit = ${itemUiState.submitResult}")
         if (itemUiState.submitResult is Result.Success) {
+            createNotificationChannel(channelId, context)
             Log.d("ItemScreen", "Closing screen")
             onClose()
         }
@@ -92,6 +107,8 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
             producer = itemUiState.item.producer
             specifications = itemUiState.item.specifications
             additionDate = itemUiState.item.additionDate
+            latitude = itemUiState.item.latitude
+            longitude = itemUiState.item.longitude
             textInitialized = true
         }
     }
@@ -104,7 +121,7 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
                     Button(onClick = {
                         Log.d(
                             "ItemScreen",
-                            "save item {name = $name, price = $price, amount = $amount, category = $category, isAvailable = $isAvailable, producer = $producer, specifications = $specifications, additionDate = $additionDate}"
+                            "save item {name = $name, price = $price, amount = $amount, category = $category, isAvailable = $isAvailable, producer = $producer, specifications = $specifications, additionDate = $additionDate, latitude = $latitude, longitude = $longitude}"
                         )
                         itemViewModel.saveOrUpdateItem(
                             name,
@@ -114,8 +131,18 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
                             isAvailable,
                             producer,
                             specifications,
-                            additionDate
-                        )
+                            additionDate,
+                            latitude,
+                            longitude
+                        ) {
+                            showSimpleNotificationWithTapAction(
+                                context,
+                                channelId,
+                                notificationId,
+                                "New product: $name",
+                                "A new product was added in My App!"
+                            )
+                        }
                     }) { Text("Save") }
                 }
             )
@@ -169,8 +196,8 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
             Row {
                 TextField(
                     value = category,
-                    onValueChange = {category = it},
-                    label = {Text("Category")}
+                    onValueChange = { category = it },
+                    label = { Text("Category") }
                 )
             }
             Row(
@@ -185,15 +212,15 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
             Row {
                 TextField(
                     value = producer,
-                    onValueChange = {producer = it},
-                    label = {Text("Producer")}
+                    onValueChange = { producer = it },
+                    label = { Text("Producer") }
                 )
             }
             Row {
                 TextField(
                     value = specifications,
-                    onValueChange = {specifications = it},
-                    label = {Text("Specifications")}
+                    onValueChange = { specifications = it },
+                    label = { Text("Specifications") }
                 )
             }
             Row(
@@ -219,6 +246,21 @@ fun ItemScreen(itemId: String?, onClose: () -> Unit) {
                     calendar.get(Calendar.DAY_OF_MONTH)
                 )
                 datePickerDialog.show()
+            }
+            Row {
+                Permissions(
+                    permissions = listOf(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ),
+                    rationaleText = "Please allow app to use location (coarse or fine)",
+                    dismissedText = "O noes! No location provider allowed!"
+                ) {
+                    MyLocation(latitude, longitude) { lat, long ->
+                        latitude = lat
+                        longitude = long
+                    }
+                }
             }
             if (itemUiState.submitResult is Result.Error) {
                 Text(

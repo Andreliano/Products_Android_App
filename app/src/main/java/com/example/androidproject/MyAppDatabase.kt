@@ -19,7 +19,6 @@ abstract class MyAppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): MyAppDatabase {
             context.deleteDatabase("app_database")
-            context.deleteDatabase("products_database")
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context,

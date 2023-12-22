@@ -16,6 +16,7 @@ import com.example.androidproject.todo.data.Item
 import com.example.androidproject.todo.data.ItemRepository
 import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.UUID;
 
 data class ItemUiState(
     val itemId: String? = null,
@@ -52,14 +53,18 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
     }
 
 
-    fun saveOrUpdateItem(name: String,
-                         price: Double,
-                         amount: Int,
-                         category: String,
-                         isAvailable: Boolean,
-                         producer: String,
-                         specifications: String,
-                         additionDate: Date
+    fun saveOrUpdateItem(
+        name: String,
+        price: Double,
+        amount: Int,
+        category: String,
+        isAvailable: Boolean,
+        producer: String,
+        specifications: String,
+        additionDate: Date,
+        latitude: Double,
+        longitude: Double,
+        onNewItemSaved: () -> Unit
     ) {
         viewModelScope.launch {
             Log.d(TAG, "saveOrUpdateItem...");
@@ -71,12 +76,17 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
                     amount = amount,
                     category = category,
                     isAvailable = isAvailable,
+                    isSaved = true,
                     producer = producer,
                     specifications = specifications,
-                    additionDate = additionDate)
+                    additionDate = additionDate,
+                    latitude = latitude,
+                    longitude = longitude
+                )
                 val savedItem: Item;
                 if (itemId == null) {
                     savedItem = itemRepository.save(item)
+                    onNewItemSaved()
                 } else {
                     savedItem = itemRepository.update(item)
                 }
@@ -85,6 +95,23 @@ class ItemViewModel(private val itemId: String?, private val itemRepository: Ite
             } catch (e: Exception) {
                 Log.d(TAG, "saveOrUpdateItem failed");
                 uiState = uiState.copy(submitResult = Result.Error(e))
+                val item = uiState.item.copy(
+                    _id = UUID.randomUUID().toString(),
+                    name = name,
+                    price = price,
+                    amount = amount,
+                    category = category,
+                    isAvailable = isAvailable,
+                    isSaved = false,
+                    producer = producer,
+                    specifications = specifications,
+                    additionDate = additionDate,
+                    latitude = latitude,
+                    longitude = longitude
+                )
+                itemRepository.addLocally(item);
+                Log.d(TAG, "added item ${item} locally");
+                uiState = uiState.copy(submitResult = Result.Success(item))
             }
         }
     }

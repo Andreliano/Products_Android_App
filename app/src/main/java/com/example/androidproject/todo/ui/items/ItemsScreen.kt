@@ -1,6 +1,9 @@
 package com.example.androidproject.todo.ui.items
 
 import android.util.Log
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -19,6 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidproject.R
+import com.example.androidproject.todo.ui.jobs.MyJobs
+import com.example.androidproject.todo.ui.location.MyLocation
+import com.example.androidproject.todo.ui.status.MyNetworkStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +37,12 @@ fun ItemsScreen(onItemClick: (id: String?) -> Unit, onAddItem: () -> Unit, onLog
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.items)) },
+                title = {
+                    Column {
+                        Text(text = stringResource(id = R.string.items))
+                        MyNetworkStatus()
+                    }
+                },
                 actions = {
                     Button(onClick = onLogout) { Text("Logout") }
                 }
@@ -45,12 +56,16 @@ fun ItemsScreen(onItemClick: (id: String?) -> Unit, onAddItem: () -> Unit, onLog
                 },
             ) { Icon(Icons.Rounded.Add, "Add") }
         }
-    ) {
-        ItemList(
-            itemList = itemsUiState,
-            onItemClick = onItemClick,
-            modifier = Modifier.padding(it)
-        )
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            MyJobs(itemsUiState)
+            ItemList(
+                itemList = itemsUiState,
+                onItemClick = onItemClick,
+                modifier = Modifier.fillMaxWidth()
+                    .weight(1f)
+            )
+        }
     }
 }
 
