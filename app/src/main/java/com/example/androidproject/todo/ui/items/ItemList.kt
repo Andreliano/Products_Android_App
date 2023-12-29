@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidproject.todo.data.Item
+import com.example.androidproject.todo.ui.animations.MyExpandableItem
 import com.example.androidproject.todo.ui.jobs.MyJobs
 import com.example.androidproject.todo.ui.status.MyNetworkStatus
 
@@ -29,6 +30,7 @@ fun ItemList(itemList: List<Item>, onItemClick: OnItemFn, modifier: Modifier) {
     ) {
         items(itemList) { item ->
             ItemDetail(item, onItemClick)
+            MyExpandableItem(item.specifications)
         }
     }
 }
