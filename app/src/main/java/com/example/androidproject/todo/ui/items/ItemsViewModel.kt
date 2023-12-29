@@ -11,9 +11,17 @@ import com.example.androidproject.core.TAG
 import com.example.androidproject.todo.data.Item
 import com.example.androidproject.todo.data.ItemRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ItemsViewModel(private val itemRepository: ItemRepository) : ViewModel() {
+
+    private val _loading = MutableStateFlow(false)
+
+    val loading: StateFlow<Boolean> = _loading.asStateFlow()
+
     val uiState: Flow<List<Item>> = itemRepository.itemStream
 
     init {
@@ -21,10 +29,17 @@ class ItemsViewModel(private val itemRepository: ItemRepository) : ViewModel() {
         loadItems()
     }
 
-    fun loadItems() {
+    private fun loadItems() {
         Log.d(TAG, "loadItems...")
         viewModelScope.launch {
-            itemRepository.refresh()
+            _loading.value = true
+            try {
+                itemRepository.refresh()
+                _loading.value = false
+            } catch (e: Exception) {
+                Log.w(TAG, "refresh failed", e)
+                _loading.value = false
+            }
         }
     }
 
