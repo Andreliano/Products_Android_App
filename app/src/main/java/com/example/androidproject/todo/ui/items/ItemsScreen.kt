@@ -13,6 +13,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.TabRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -34,15 +40,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidproject.R
 import com.example.androidproject.todo.ui.animations.MyFloatingActionButton
+import com.example.androidproject.todo.ui.animations.MyTab
 import com.example.androidproject.todo.ui.jobs.MyJobs
 import com.example.androidproject.todo.ui.status.MyNetworkStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+private enum class TabPage {
+    Home, Prices
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemsScreen(onItemClick: (id: String?) -> Unit, onAddItem: () -> Unit, onLogout: () -> Unit) {
     Log.d("ItemsScreen", "recompose")
+
+    var tabPage by remember { mutableStateOf(TabPage.Home) }
+
     var isAdding by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -66,16 +80,10 @@ fun ItemsScreen(onItemClick: (id: String?) -> Unit, onAddItem: () -> Unit, onLog
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(text = stringResource(id = R.string.items))
-                        MyNetworkStatus()
-                    }
-                },
-                actions = {
-                    Button(onClick = onLogout) { Text("Logout") }
-                }
+            HomeTabBar(
+                tabPage = tabPage,
+                onTabSelected = { tabPage = it },
+                onLogout = onLogout
             )
         },
         floatingActionButton = {
@@ -92,22 +100,53 @@ fun ItemsScreen(onItemClick: (id: String?) -> Unit, onAddItem: () -> Unit, onLog
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            if (isLoading) {
-                LoadingRow() // Show loading row when items are being fetched
-            } else {
+            if(tabPage.name.equals("Home")) {
+                if (isLoading) {
+                    LoadingRow() // Show loading row when items are being fetched
+                } else {
+                    MyNetworkStatus()
+                    ItemList(
+                        itemList = itemsUiState,
+                        onItemClick = onItemClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                }
+            } else if(tabPage.name.equals("Prices")){
                 MyJobs(itemsUiState)
-                ItemList(
-                    itemList = itemsUiState,
-                    onItemClick = onItemClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
             }
         }
-
     }
 }
+
+@Composable
+private fun HomeTabBar(
+    tabPage: TabPage,
+    onTabSelected: (tabPage: TabPage) -> Unit,
+    onLogout: () -> Unit
+) {
+    TabRow(
+        selectedTabIndex = tabPage.ordinal,
+    ) {
+        MyTab(
+            icon = Icons.Default.Home,
+            title = "Home",
+            onClick = { onTabSelected(TabPage.Home) }
+        )
+        MyTab(
+            icon = Icons.Default.Info,
+            title = "Prices",
+            onClick = { onTabSelected(TabPage.Prices) }
+        )
+        MyTab(
+            icon = Icons.Default.Close,
+            title = "Logout",
+            onClick = { onLogout() }
+        )
+    }
+}
+
 
 @Composable
 private fun LoadingRow() {
