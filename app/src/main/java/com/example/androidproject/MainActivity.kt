@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.example.androidproject.core.TAG
 import com.example.androidproject.todo.ui.location.MyLocation
+import com.example.androidproject.todo.ui.sensors.ProximitySensor
 import com.example.androidproject.todo.ui.status.MyNetworkStatus
 import com.example.androidproject.todo.util.Permissions
 import com.example.androidproject.ui.theme.MyAppTheme
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
             Log.d(TAG, "onCreate")
             MyApp {
                 MyAppNavHost()
+                ProximitySensor()
 //                Permissions(
 //                    permissions = listOf(
 //                        Manifest.permission.ACCESS_COARSE_LOCATION,
